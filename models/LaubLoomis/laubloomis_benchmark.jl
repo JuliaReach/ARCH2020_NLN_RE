@@ -2,73 +2,78 @@ using BenchmarkTools, Plots, Plots.PlotMeasures, LaTeXStrings
 using BenchmarkTools: minimum, median
 
 SUITE = BenchmarkGroup()
-SUITE["LaubLoomis"] = BenchmarkGroup()
+model = "LaubLoomis"
+cases = ["W=0.01", "W=0.05", "W=0.1"]
+SUITE[model] = BenchmarkGroup()
 
-# ==============================================================================
-# Jet-based approach using Taylor Models
-# ==============================================================================
 include("laubloomis.jl")
+validation = []
 
 # ----------------------------------------
-# --- Case 1: smaller initial states ---
+#  Case 1: smaller initial states
 # ----------------------------------------
-𝑃, 𝑂 = laubloomis(W=0.01, property=(t,x)->x[4] < 4.5)
+W = 0.01
+prob = laubloomis(W=W)
+alg = TMJets(abs_tol=1e-11, orderT=7, orderQ=1, adaptive=true)
 
-𝑂₁ = Options(:abs_tol=>1e-10, :orderT=>7, :orderQ=>1, :max_steps=>1000)
-
-# first run
-sol_case_1 = solve(𝑃, 𝑂, op=TMJets(𝑂₁))
+# warm-up run
+sol_1 = solve(prob, T=T, alg=alg)
+sol_1z = overapproximate(sol_1, Zonotope)
 
 # verify that specification holds
-v4 = [0.0, 1.0] # the flowpipe has been projected so we check for the second component which is x4
-@assert all([ρ(v4, sol_case_1.Xk[i].X) < 4.5 for i in eachindex(sol_case_1.Xk)])
+property = ρ(e4, sol_1z) < 4.5
+push!(validation, property ? 1 : 0)
 
-# print width of final box
-H = sol_case_1.Xk[end].X
-println("width of final box, case W = 0.01 : $(high(H)[2] - low(H)[2])")
+# width of final box
+final_width = ρ(e4, sol_1z[end]) + ρ(-e4, sol_1z[end])
+println("width of final box, case $(cases[1]) : $final_width")
 
 # benchmark
-SUITE["LaubLoomis"]["W=0.01"] = @benchmarkable solve($𝑃, $𝑂, op=TMJets($𝑂₁))
+SUITE["LaubLoomis"][cases[1]] = @benchmarkable solve($prob, T=$T, alg=$alg)
 
 # ----------------------------------------
-# --- Case 2: intermediate initial states ---
+# Case 2: intermediate initial states
 # ----------------------------------------
-𝑃, 𝑂 = laubloomis(W=0.05, property=(t,x)->x[4] < 4.5)
+W = 0.05
+prob = laubloomis(W=W)
+alg = TMJets(abs_tol=1e-12, orderT=7, orderQ=1, adaptive=false)
 
-𝑂₂ = Options(:abs_tol=>1e-10, :orderT=>7, :orderQ=>1, :max_steps=>1000)
-
-# first run
-sol_case_2 = solve(𝑃, 𝑂, op=TMJets(𝑂₂))
+# warm-up run
+sol_2 = solve(prob, T=T, alg=alg)
+sol_2z = overapproximate(sol_2, Zonotope)
 
 # verify that specification holds
-@assert all([ρ(v4, sol_case_2.Xk[i].X) < 4.5 for i in eachindex(sol_case_2.Xk)])
+property = ρ(e4, sol_2z) < 4.5
+push!(validation, property ? 1 : 0)
 
-# print width of final box
-H = sol_case_2.Xk[end].X
-println("width of final box, case W = 0.05 : $(high(H)[2] - low(H)[2])")
+# width of final box
+final_width = ρ(e4, sol_2z[end]) + ρ(-e4, sol_2z[end])
+println("width of final box, case $(cases[2]): $final_width")
 
 # benchmark
-SUITE["LaubLoomis"]["W=0.05"] = @benchmarkable solve($𝑃, $𝑂, op=TMJets($𝑂₂))
+SUITE["LaubLoomis"][cases[2]] = @benchmarkable solve($prob, T=$T, alg=$alg)
 
 # ----------------------------------------
-# --- Case 3: larger initial states ---
+# Case 3: larger initial states
 # ----------------------------------------
-𝑃, 𝑂 = laubloomis(W=0.1, property=(t,x)->x[4] < 5.0)
+W = 0.1
+prob = laubloomis(W=W)
+alg = TMJets(abs_tol=1e-12, orderT=7, orderQ=1, adaptive=false)
 
-𝑂₃ = Options(:abs_tol=>1e-10, :orderT=>7, :orderQ=>1, :max_steps=>1000)
-
-# first run
-sol_case_3 = solve(𝑃, 𝑂, op=TMJets(𝑂₃))
+# warm-up run
+sol_3 = solve(prob, T=T, alg=alg)
+sol_3z = overapproximate(sol_3, Zonotope)
 
 # verify that specification holds
-@assert all([ρ(v4, sol_case_3.Xk[i].X) < 5.0 for i in eachindex(sol_case_3.Xk)])
+property = ρ(e4, sol_3z) < 5.0
+push!(validation, property ? 1 : 0)
 
-# print width of final box
-H = sol_case_3.Xk[end].X
-println("width of final box, case W = 0.1 : $(high(H)[2] - low(H)[2])")
+# width of final box
+final_width = ρ(e4, sol_3z[end]) + ρ(-e4, sol_3z[end])
+println("width of final box, case W = $(cases[3]) : $final_width")
 
 # benchmark
-SUITE["LaubLoomis"]["W=0.1"] = @benchmarkable solve($𝑃, $𝑂, op=TMJets($𝑂₃))
+SUITE["LaubLoomis"][cases[3]] = @benchmarkable solve($prob, T=$T, alg=$alg)
 
 # ==============================================================================
 # Execute benchmarks and save benchmark results
@@ -86,11 +91,27 @@ println("minimum time for each benchmark:\n", minimum(results))
 # return the median for each test
 println("median time for each benchmark:\n", median(results))
 
+# export runtimes
+runtimes = Dict()
+for (i, c) in enumerate(cases)
+    t = median(results[model][c]).time * 1e-9
+    runtimes[c] = t
+end
+
+open("runtimes.csv", "w") do io
+   print(io, "JuliaReach\n")
+   for (i, c) in enumerate(casos)
+        print(io, "$c; $(validation[i]); $(runtimes[c])\n")
+   end
+   print(io, "End of JuliaReach")
+end
+
+#=
 # ==============================================================================
 # Execute benchmarks and save benchmark results
 # ==============================================================================
 
-plot(sol_case_1,
+plot(sol_1,
      tickfont=font(30, "Times"), guidefontsize=45,
      xlab=L"t\raisebox{2.0mm}{\textcolor{white}{.}}",
      ylab=L"x_{4}\raisebox{1.2mm}{\textcolor{white}{.}}",
@@ -103,7 +124,7 @@ plot(sol_case_1,
 plot!(x->x, x->4.5, 0., 20., line=2, color="red", linestyle=:dash, legend=nothing)
 savefig("laubloomis_case_1.png")
 
-plot(sol_case_2,
+plot(sol_2,
      tickfont=font(30, "Times"), guidefontsize=45,
      xlab=L"t\raisebox{2.0mm}{\textcolor{white}{.}}",
      ylab=L"x_{4}\raisebox{1.2mm}{\textcolor{white}{.}}",
@@ -116,7 +137,7 @@ plot(sol_case_2,
 plot!(x->x, x->5.0, 0., 20., line=2, color="red", linestyle=:dash, legend=nothing)
 savefig("laubloomis_case_2.png")
 
-plot(sol_case_3,
+plot(sol_3,
      tickfont=font(30, "Times"), guidefontsize=45,
      xlab=L"t\raisebox{2.0mm}{\textcolor{white}{.}}",
      ylab=L"x_{4}\raisebox{1.2mm}{\textcolor{white}{.}}",
@@ -146,3 +167,5 @@ plot!(sol_case_3, alpha=0.2,
 plot!(x->x, x->5.0, 0., 20., line=2, color="red", linestyle=:dash, legend=nothing)
 plot!(x->x, x->4.5, 0., 20., line=2, color="red", linestyle=:dash, legend=nothing)
 savefig("laubloomis_case_all.png")
+
+=#
