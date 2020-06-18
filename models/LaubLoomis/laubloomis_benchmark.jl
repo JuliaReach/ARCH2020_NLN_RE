@@ -100,7 +100,7 @@ end
 
 open("runtimes.csv", "w") do io
    print(io, "JuliaReach\n")
-   for (i, c) in enumerate(casos)
+   for (i, c) in enumerate(cases)
         print(io, "$c; $(validation[i]); $(runtimes[c])\n")
    end
    print(io, "End of JuliaReach")
