@@ -14,8 +14,5 @@ WORKDIR /juliareach
 # copy current directory into container
 COPY . /juliareach
 
-# install required Julia packages
-RUN julia install_dependencies.jl
-
 # run when container launches
 CMD ["julia", "startup.jl"]
