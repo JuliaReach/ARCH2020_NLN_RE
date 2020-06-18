@@ -3,8 +3,7 @@
 # See https://easychair.org/publications/paper/gjfh
 # =================================================================
 
-using Reachability, MathematicalSystems, LazySets, TaylorIntegration
-using Reachability: solve
+using ReachabilityAnalysis, Plots
 
 # parameters of the model
 const g = 9.81           # gravity constant in m/s^2
@@ -28,6 +27,8 @@ const u₁ = 1.0
 const u₂ = 0.0
 const u₃ = 0.0
 
+const Tspan = (0.0, 5.0)
+
 @inline function quad_property(t, x)
     b1 = (x[3] < 1.4)
     b2 = t ≥ 1.0 ? (x[3] > 0.9) : true
@@ -35,7 +36,7 @@ const u₃ = 0.0
     return b1 && b2 && b3
 end
 
-@taylorize function quadrotor!(t, x, dx)
+@taylorize function quadrotor!(dx, x, params, t)
     # unwrap the variables and the controllers; the last three are the controllers
     # x₁, x₂, x₃, x₄, x₅, x₆, x₇, x₈, x₉, x₁₀, x₁₁, x₁₂, u₁, u₂, u₃ = x
     x₁  = x[1]
@@ -77,7 +78,7 @@ end
     sx7cx8 = sx7*cx8
     cx7cx8 = cx7*cx8
     sx7_cx8 = sx7/cx8
-    cx7_cx8 = cx7/cx8    
+    cx7_cx8 = cx7/cx8
     #
     x4cx8 = cx8*x₄
     #
@@ -86,7 +87,7 @@ end
     xdot9 = p11 + p12
 
     # differential equations for the quadrotor
-    #    
+    #
     dx[1] = (cx9*x4cx8 + (sx7cx9*sx8 - cx7sx9)*x₅) + (cx7cx9*sx8 + sx7sx9)*x₆
     dx[2] = (sx9*x4cx8 + (sx7sx9*sx8 + cx7cx9)*x₅) + (cx7sx9*sx8 - sx7cx9)*x₆
     dx[3] = (sx8*x₄ - sx7cx8*x₅) - cx7cx8*x₆
@@ -99,30 +100,25 @@ end
     dx[10] = Cyzx * (x₁₁ * x₁₂) + Tx
     dx[11] = Czxy * (x₁₀ * x₁₂) + Ty
     dx[12] = Cxyz * (x₁₀ * x₁₁) + Tz
-     #
+    #
     return dx
 end
 
-function quad(; T=5.0, plot_vars=[0, 3],
+function quadrotor(; T=5.0, plot_vars=[0, 3],
                 property=quad_property,
-                project_reachset=true)
+                project_reachset=true,
+                Wpos = 0.4, Wvel = 0.4)
 
     # equations, x' = f(x(t))
     𝐹 = BlackBoxContinuousSystem(quadrotor!, 12)
 
     # initial conditions
-    Wpos = 0.4
-    Wvel = 0.4
     X0c = zeros(12)
     ΔX0 = [Wpos, Wpos, Wpos, Wvel, Wvel, Wvel, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
     X0 = Hyperrectangle(X0c, ΔX0)
 
-    # instantiate the IVP
-    𝑃 = InitialValueProblem(𝐹, X0)
+    # initial-value problem
+    prob = @ivp(x' = quadrotor!(x), dim: 12, x(0) ∈ X0);
 
-    # general options
-    𝑂 = Options(:T=>T, :plot_vars=>plot_vars, :property=>property,
-                :project_reachset=>project_reachset, :mode=>"check")
-
-    return (𝑃, 𝑂)
+    return prob
 end

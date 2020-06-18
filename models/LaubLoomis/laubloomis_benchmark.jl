@@ -22,7 +22,7 @@ sol_1z = overapproximate(sol_1, Zonotope)
 
 # verify that specification holds
 property = ρ(e4, sol_1z) < 4.5
-push!(validation, property ? 1 : 0)
+push!(validation, Int(property))
 
 # width of final box
 final_width = ρ(e4, sol_1z[end]) + ρ(-e4, sol_1z[end])
@@ -66,7 +66,7 @@ sol_3z = overapproximate(sol_3, Zonotope)
 
 # verify that specification holds
 property = ρ(e4, sol_3z) < 5.0
-push!(validation, property ? 1 : 0)
+push!(validation, Int(property))
 
 # width of final box
 final_width = ρ(e4, sol_3z[end]) + ρ(-e4, sol_3z[end])
@@ -98,12 +98,8 @@ for (i, c) in enumerate(cases)
     runtimes[c] = t
 end
 
-open("runtimes.csv", "w") do io
-   print(io, "JuliaReach\n")
-   for (i, c) in enumerate(cases)
-        print(io, "$c; $(validation[i]); $(runtimes[c])\n")
-   end
-   print(io, "End of JuliaReach")
+for (i, c) in enumerate(cases)
+    print(io, "JuliaReach, LALO20, $c, $(validation[i]), $(runtimes[c])\n")
 end
 
 #=

@@ -6,7 +6,11 @@ import Pkg
 Pkg.activate(@__DIR__)
 Pkg.instantiate()
 
+# const io = open("runtimes.csv", "w")
+
 function main()
+    global io = open("runtimes.csv", "a")
+
     println("Running NLN benchmarks...")
 
     # Van der Pol benchmark
@@ -19,9 +23,12 @@ function main()
 
     # Quadrotor benchmark
     println("###\nRunning Quadrotor benchmark\n###")
-    # include("models/Quadrotor/quadrotor_benchmark.jl")
+    include("models/Quadrotor/quadrotor_benchmark.jl")
 
+
+    print(io, "\n")
     println("Finished running benchmarks.")
+    close(io)
     nothing
 end
 

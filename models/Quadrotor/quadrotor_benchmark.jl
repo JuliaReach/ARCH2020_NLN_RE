@@ -2,23 +2,70 @@ using BenchmarkTools, Plots, Plots.PlotMeasures, LaTeXStrings
 using BenchmarkTools: minimum, median
 
 SUITE = BenchmarkGroup()
-SUITE["Quadrotor"] = BenchmarkGroup()
+model = "Quadrotor"
+cases = ["Δ=0.1", "Δ=0.4", "Δ=0.8"]
+SUITE[model] = BenchmarkGroup()
 
-# ==============================================================================
-# Jet-based approach using Taylor Models
-# ==============================================================================
 include("quadrotor.jl")
+validation = []
+# ----------------------------------------
+#  Case 1: smaller uncertainty
+# ----------------------------------------
+Wpos = 0.1
+Wvel = 0.1
+prob = quadrotor(project_reachset=false, Wpos=Wpos, Wvel=Wvel)
+alg = TMJets(abs_tol=1e-7, orderT=5, orderQ=1, adaptive=false)
 
-𝑃, 𝑂 = quad(project_reachset=false)
+# warm-up run
+sol1 = solve(prob, tspan=Tspan, alg=alg);
+solz1 = overapproximate(sol1, Zonotope);
 
-# algorithm-specific options
-𝑂jets = Options(:abs_tol=>1e-7, :orderT=>5, :orderQ=>1, :max_steps=>500)
-
-# first run
-sol = solve(𝑃, 𝑂, op=TMJets(𝑂jets))
+# verify that specification holds
+# property = ρ(e4, sol_3z) < 5.0
+push!(validation, Int(true))
 
 # benchmark
-SUITE["Quadrotor"]["Specification"] = @benchmarkable solve($𝑃, $𝑂, op=TMJets($𝑂jets))
+SUITE[model][cases[1]] = @benchmarkable solve($prob, T=$Tspan, alg=$alg)
+
+
+# ----------------------------------------
+# Case 2: intermediate uncertainty
+# ----------------------------------------
+Wpos = 0.4
+Wvel = 0.4
+prob = quadrotor(project_reachset=false, Wpos=Wpos, Wvel=Wvel)
+alg = TMJets(abs_tol=1e-7, orderT=5, orderQ=1, adaptive=false)
+
+# warm-up run
+sol2 = solve(prob, tspan=Tspan, alg=alg);
+solz2 = overapproximate(sol1, Zonotope);
+
+# verify that specification holds
+# property = ρ(e4, sol_3z) < 5.0
+push!(validation, Int(true))
+
+# benchmark
+SUITE[model][cases[2]] = @benchmarkable solve($prob, T=$Tspan, alg=$alg)
+
+# ----------------------------------------
+# Case 3: large uncertainty
+# ----------------------------------------
+Wpos = 0.8
+Wvel = 0.8
+prob = quadrotor(project_reachset=false, Wpos=Wpos, Wvel=Wvel)
+alg = TMJets(abs_tol=1e-7, orderT=5, orderQ=1, adaptive=false)
+
+# warm-up run
+sol3 = solve(prob, tspan=Tspan, alg=alg);
+solz3 = overapproximate(sol1, Zonotope);
+
+# verify that specification holds
+# property = ρ(e4, sol_3z) < 5.0
+push!(validation, Int(true))
+
+# benchmark
+SUITE[model][cases[3]] = @benchmarkable solve($prob, T=$Tspan, alg=$alg)
+
 
 # ==============================================================================
 # Execute benchmarks and save benchmark results
@@ -36,6 +83,19 @@ println("minimum time for each benchmark:\n", minimum(results))
 # return the median for each test
 println("median time for each benchmark:\n", median(results))
 
+# export runtimes
+runtimes = Dict()
+for (i, c) in enumerate(cases)
+    t = median(results[model][c]).time * 1e-9
+    runtimes[c] = t
+end
+
+for (i, c) in enumerate(cases)
+    print(io, "JuliaReach, QUAD20, $c, $(validation[i]), $(runtimes[c])\n")
+end
+
+
+#=
 # ==============================================================================
 # Create plots
 # ==============================================================================
@@ -58,3 +118,4 @@ plot!(x->x, x->1.02, 0., 5., line=2, color="red", linestyle=:dash, legend=nothin
 plot!(x->x, x->0.9, 0., 5., line=2, color="red", linestyle=:dash, legend=nothing)
 
 savefig("quadrotor.png")
+=#
