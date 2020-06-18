@@ -315,10 +315,12 @@ deps = ["Markdown"]
 uuid = "b77e0a4c-d291-57a0-90e8-8db25a27a240"
 
 [[IntervalArithmetic]]
-deps = ["CRlibm", "FastRounding", "LinearAlgebra", "Markdown", "Random", "RecipesBase", "RoundingEmulator", "SetRounding", "StaticArrays"]
-git-tree-sha1 = "ca07117479ccdfef667cbc755be907e35209866b"
+deps = ["CRlibm", "FastRounding", "LinearAlgebra", "Markdown", "RecipesBase", "SetRounding", "StaticArrays"]
+git-tree-sha1 = "edab252ea0eaa3beabb506d746aff6a0f2ba469b"
+repo-rev = "nonrecursive_powers"
+repo-url = "https://github.com/JuliaIntervals/IntervalArithmetic.jl.git"
 uuid = "d1acc4aa-44c8-5952-acd4-ba5d80a2a253"
-version = "0.17.4"
+version = "0.16.1"
 
 [[IntervalMatrices]]
 deps = ["IntervalArithmetic", "LinearAlgebra", "Random", "Reexport"]
@@ -375,9 +377,9 @@ version = "3.100.0+1"
 
 [[LLVM]]
 deps = ["CEnum", "Libdl", "Printf", "Unicode"]
-git-tree-sha1 = "dd3f584c3dbefe39b2a8fbafa1a3b77e31e21255"
+git-tree-sha1 = "72fc0a39d5899091ff2d4cdaa64cb5e4862cf813"
 uuid = "929cbde3-209d-540e-8aea-75f648917ca0"
-version = "1.5.1"
+version = "1.5.2"
 
 [[LaTeXStrings]]
 git-tree-sha1 = "de44b395389b84fd681394d4e8d39ef14e3a2ea8"
@@ -392,7 +394,9 @@ version = "1.2.2"
 
 [[LazySets]]
 deps = ["Distributed", "GLPK", "GLPKMathProgInterface", "InteractiveUtils", "IntervalArithmetic", "JuMP", "LinearAlgebra", "MathProgBase", "Random", "RecipesBase", "Reexport", "Requires", "SharedArrays", "SparseArrays"]
-git-tree-sha1 = "7b34c11a3252b5832ae030dfbe4c24188863d433"
+git-tree-sha1 = "0c7b1bea8b597540ee976eeb2004ca388b520fe5"
+repo-rev = "mforets/union"
+repo-url = "https://github.com/JuliaReach/LazySets.jl.git"
 uuid = "b4f0291d-fe17-52bc-9479-3d1a343d9043"
 version = "1.36.2"
 
@@ -612,9 +616,9 @@ uuid = "de0858da-6303-5e67-8744-51eddeeeb8d7"
 
 [[ProgressLogging]]
 deps = ["Logging", "SHA", "UUIDs"]
-git-tree-sha1 = "e47914361d124d8760f5e356403daeb7f3b81633"
+git-tree-sha1 = "59398022b661b6fd569f25de6b18fde39843196a"
 uuid = "33c8b6b6-d38a-422a-b730-caa89a2f386c"
-version = "0.1.2"
+version = "0.1.3"
 
 [[ProgressMeter]]
 deps = ["Distributed", "Printf"]
@@ -632,9 +636,9 @@ uuid = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 
 [[ReachabilityAnalysis]]
 deps = ["HybridSystems", "IntervalArithmetic", "IntervalMatrices", "LazySets", "LinearAlgebra", "MathematicalSystems", "Parameters", "Printf", "ProgressMeter", "RecipesBase", "RecursiveArrayTools", "Reexport", "Requires", "SparseArrays", "StaticArrays", "TaylorIntegration", "TaylorModels", "TaylorSeries", "UnPack"]
-git-tree-sha1 = "ad1ac86584a42713f5b1d67f2e09d10dda21e648"
+git-tree-sha1 = "33c68d237293129d525e674b4a4b8fca97d368dd"
 uuid = "1e97bd63-91d1-579d-8e8d-501d2b57c93f"
-version = "0.6.0"
+version = "0.7.0"
 
 [[RecipesBase]]
 git-tree-sha1 = "54f8ceb165a0f6d083f0d12cb4996f5367c6edbc"
@@ -787,9 +791,9 @@ version = "0.10.6"
 
 [[TerminalLoggers]]
 deps = ["LeftChildRightSiblingTrees", "Logging", "Markdown", "Printf", "ProgressLogging", "UUIDs"]
-git-tree-sha1 = "8c05be75dfe73d90e5dfb6293e0c852013f7282d"
+git-tree-sha1 = "cbea752b5eef52a3e1188fb31580c3e4fa0cbc35"
 uuid = "5d786b92-1e48-4d6f-9151-6b4477ca9bed"
-version = "0.1.1"
+version = "0.1.2"
 
 [[Test]]
 deps = ["Distributed", "InteractiveUtils", "Logging", "Random"]
@@ -826,10 +830,10 @@ version = "1.0.1"
 uuid = "4ec0a83e-493e-50e2-b9ac-8f72acf5a8f5"
 
 [[VectorizationBase]]
-deps = ["CpuId", "LLVM", "LinearAlgebra"]
-git-tree-sha1 = "dda42c864581454234b6b9c8e7f441ebbcaa70cc"
+deps = ["CpuId", "LLVM", "Libdl", "LinearAlgebra"]
+git-tree-sha1 = "bcadc352d9c81b0ef9ceebe822d30128b779f56b"
 uuid = "3d5dd08c-fd9d-11e8-17fa-ed2836048c2f"
-version = "0.12.7"
+version = "0.12.8"
 
 [[XML2_jll]]
 deps = ["Libdl", "Libiconv_jll", "Pkg", "Zlib_jll"]
