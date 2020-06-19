@@ -100,7 +100,6 @@ for (i, c) in enumerate(cases)
 end
 
 for (i, c) in enumerate(cases)
-    @show(c, i)
     print(io, "JuliaReach, $model, $c, $(validation[i]), $(runtimes[c]), $(final_volume[i])\n")
 end
 
