@@ -41,7 +41,7 @@ alg = TMJets(abs_tol=1e-7, orderT=5, orderQ=1, adaptive=false)
 
 # warm-up run
 sol2 = solve(prob, tspan=Tspan, alg=alg);
-solz2 = overapproximate(sol1, Zonotope);
+solz2 = overapproximate(sol2, Zonotope);
 
 # verify that specification holds
 property = quad_property(solz2)
@@ -62,7 +62,7 @@ alg = TMJets(abs_tol=1e-7, orderT=5, orderQ=1, adaptive=false)
 
 # warm-up run
 sol3 = solve(prob, tspan=Tspan, alg=alg);
-solz3 = overapproximate(sol1, Zonotope);
+solz3 = overapproximate(sol3, Zonotope);
 
 # verify that specification holds
 property = quad_property(solz3)
