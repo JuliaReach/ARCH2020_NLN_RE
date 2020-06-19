@@ -8,6 +8,7 @@ SUITE[model] = BenchmarkGroup()
 
 include("laubloomis.jl")
 validation = []
+final_width = []
 
 # ----------------------------------------
 #  Case 1: smaller initial states
@@ -25,8 +26,9 @@ property = ρ(e4, sol_1z) < 4.5
 push!(validation, Int(property))
 
 # width of final box
-final_width = ρ(e4, sol_1z[end]) + ρ(-e4, sol_1z[end])
-println("width of final box, case $(cases[1]) : $final_width")
+width = ρ(e4, sol_1z[end]) + ρ(-e4, sol_1z[end])
+push!(final_width, trunc(width, digits=4))
+println("width of final box, case $(cases[1]) : $width")
 
 # benchmark
 SUITE[model][cases[1]] = @benchmarkable solve($prob, T=$T, alg=$alg)
@@ -47,8 +49,9 @@ property = ρ(e4, sol_2z) < 4.5
 push!(validation, property ? 1 : 0)
 
 # width of final box
-final_width = ρ(e4, sol_2z[end]) + ρ(-e4, sol_2z[end])
-println("width of final box, case $(cases[2]): $final_width")
+width = ρ(e4, sol_2z[end]) + ρ(-e4, sol_2z[end])
+push!(final_width, trunc(width, digits=3))
+println("width of final box, case $(cases[2]): $width")
 
 # benchmark
 SUITE[model][cases[2]] = @benchmarkable solve($prob, T=$T, alg=$alg)
@@ -69,8 +72,9 @@ property = ρ(e4, sol_3z) < 5.0
 push!(validation, Int(property))
 
 # width of final box
-final_width = ρ(e4, sol_3z[end]) + ρ(-e4, sol_3z[end])
-println("width of final box, case W = $(cases[3]) : $final_width")
+width = ρ(e4, sol_3z[end]) + ρ(-e4, sol_3z[end])
+push!(final_width, trunc(width, digits=3))
+println("width of final box, case W = $(cases[3]) : $width")
 
 # benchmark
 SUITE[model][cases[3]] = @benchmarkable solve($prob, T=$T, alg=$alg)
@@ -99,7 +103,7 @@ for (i, c) in enumerate(cases)
 end
 
 for (i, c) in enumerate(cases)
-    print(io, "JuliaReach, $model, $c, $(validation[i]), $(runtimes[c])\n")
+    print(io, "JuliaReach, $model, $c, $(validation[i]), $(runtimes[c]), $(final_width[i])\n")
 end
 
 #=
