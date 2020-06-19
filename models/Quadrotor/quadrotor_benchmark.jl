@@ -22,8 +22,10 @@ sol1 = solve(prob, tspan=Tspan, alg=alg);
 solz1 = overapproximate(sol1, Zonotope);
 
 # verify that specification holds
-# property = ρ(e4, sol_3z) < 5.0
-push!(validation, Int(true))
+property = quad_property(solz1)
+push!(validation, Int(property))
+
+println("Validate property, case $(cases[1]) : $(property)")
 
 # benchmark
 SUITE[model][cases[1]] = @benchmarkable solve($prob, T=$Tspan, alg=$alg)
@@ -42,8 +44,10 @@ sol2 = solve(prob, tspan=Tspan, alg=alg);
 solz2 = overapproximate(sol1, Zonotope);
 
 # verify that specification holds
-# property = ρ(e4, sol_3z) < 5.0
-push!(validation, Int(true))
+property = quad_property(solz2)
+push!(validation, Int(property))
+
+println("Validate property, case $(cases[2]) : $(property)")
 
 # benchmark
 SUITE[model][cases[2]] = @benchmarkable solve($prob, T=$Tspan, alg=$alg)
@@ -61,8 +65,10 @@ sol3 = solve(prob, tspan=Tspan, alg=alg);
 solz3 = overapproximate(sol1, Zonotope);
 
 # verify that specification holds
-# property = ρ(e4, sol_3z) < 5.0
-push!(validation, Int(true))
+property = quad_property(solz3)
+push!(validation, Int(property))
+
+println("Validate property, case $(cases[3]) : $(property)")
 
 # benchmark
 SUITE[model][cases[3]] = @benchmarkable solve($prob, T=$Tspan, alg=$alg)
