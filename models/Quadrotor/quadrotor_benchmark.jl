@@ -2,12 +2,13 @@ using BenchmarkTools, Plots, Plots.PlotMeasures, LaTeXStrings
 using BenchmarkTools: minimum, median
 
 SUITE = BenchmarkGroup()
-model = "Quadrotor"
+model = "QUAD20"
 cases = ["Δ=0.1", "Δ=0.4", "Δ=0.8"]
 SUITE[model] = BenchmarkGroup()
 
 include("quadrotor.jl")
 validation = []
+
 # ----------------------------------------
 #  Case 1: smaller uncertainty
 # ----------------------------------------
@@ -91,7 +92,7 @@ for (i, c) in enumerate(cases)
 end
 
 for (i, c) in enumerate(cases)
-    print(io, "JuliaReach, QUAD20, $c, $(validation[i]), $(runtimes[c])\n")
+    print(io, "JuliaReach, $model, $c, $(validation[i]), $(runtimes[c])\n")
 end
 
 

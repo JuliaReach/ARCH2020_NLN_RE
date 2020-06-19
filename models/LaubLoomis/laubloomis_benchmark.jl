@@ -2,7 +2,7 @@ using BenchmarkTools, Plots, Plots.PlotMeasures, LaTeXStrings
 using BenchmarkTools: minimum, median
 
 SUITE = BenchmarkGroup()
-model = "LaubLoomis"
+model = "LALO20"
 cases = ["W=0.01", "W=0.05", "W=0.1"]
 SUITE[model] = BenchmarkGroup()
 
@@ -29,7 +29,7 @@ final_width = ρ(e4, sol_1z[end]) + ρ(-e4, sol_1z[end])
 println("width of final box, case $(cases[1]) : $final_width")
 
 # benchmark
-SUITE["LaubLoomis"][cases[1]] = @benchmarkable solve($prob, T=$T, alg=$alg)
+SUITE[model][cases[1]] = @benchmarkable solve($prob, T=$T, alg=$alg)
 
 # ----------------------------------------
 # Case 2: intermediate initial states
@@ -51,7 +51,7 @@ final_width = ρ(e4, sol_2z[end]) + ρ(-e4, sol_2z[end])
 println("width of final box, case $(cases[2]): $final_width")
 
 # benchmark
-SUITE["LaubLoomis"][cases[2]] = @benchmarkable solve($prob, T=$T, alg=$alg)
+SUITE[model][cases[2]] = @benchmarkable solve($prob, T=$T, alg=$alg)
 
 # ----------------------------------------
 # Case 3: larger initial states
@@ -73,7 +73,7 @@ final_width = ρ(e4, sol_3z[end]) + ρ(-e4, sol_3z[end])
 println("width of final box, case W = $(cases[3]) : $final_width")
 
 # benchmark
-SUITE["LaubLoomis"][cases[3]] = @benchmarkable solve($prob, T=$T, alg=$alg)
+SUITE[model][cases[3]] = @benchmarkable solve($prob, T=$T, alg=$alg)
 
 # ==============================================================================
 # Execute benchmarks and save benchmark results
@@ -99,7 +99,7 @@ for (i, c) in enumerate(cases)
 end
 
 for (i, c) in enumerate(cases)
-    print(io, "JuliaReach, LALO20, $c, $(validation[i]), $(runtimes[c])\n")
+    print(io, "JuliaReach, $model, $c, $(validation[i]), $(runtimes[c])\n")
 end
 
 #=

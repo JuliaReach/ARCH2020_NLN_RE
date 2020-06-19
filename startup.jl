@@ -9,7 +9,7 @@ Pkg.instantiate()
 # const io = open("runtimes.csv", "w")
 
 function main()
-    global io = open("runtimes.csv", "a")
+    global io = open("runtimes.csv", "w")
 
     println("Running NLN benchmarks...")
 

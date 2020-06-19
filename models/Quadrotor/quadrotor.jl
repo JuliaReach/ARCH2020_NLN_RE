@@ -109,9 +109,6 @@ function quadrotor(; T=5.0, plot_vars=[0, 3],
                 project_reachset=true,
                 Wpos = 0.4, Wvel = 0.4)
 
-    # equations, x' = f(x(t))
-    𝐹 = BlackBoxContinuousSystem(quadrotor!, 12)
-
     # initial conditions
     X0c = zeros(12)
     ΔX0 = [Wpos, Wpos, Wpos, Wvel, Wvel, Wvel, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
