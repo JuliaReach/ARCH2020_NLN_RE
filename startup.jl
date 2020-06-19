@@ -6,12 +6,14 @@ import Pkg
 Pkg.activate(@__DIR__)
 Pkg.instantiate()
 
-# const io = open("runtimes.csv", "w")
-
 function main()
     global io = open("runtimes.csv", "w")
 
     println("Running NLN benchmarks...")
+
+    # Production-destruction benchmark
+    println("###\nRunning production-destruction model benchmark\n###")
+    include("models/ProdDestruct/prod_destruct_benchmark.jl")
 
     # Coupled Van der Pol benchmark
     println("###\nRunning Van der Pol benchmark\n###")
