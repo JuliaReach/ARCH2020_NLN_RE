@@ -13,9 +13,9 @@ function main()
 
     println("Running NLN benchmarks...")
 
-    # Van der Pol benchmark
+    # Coupled Van der Pol benchmark
     println("###\nRunning Van der Pol benchmark\n###")
-    # include("models/VanDerPol/vanderpol_benchmark.jl")
+    include("models/VanDerPol/vanderpol_benchmark.jl")
 
     # Laub-Loomis benchmark
     println("###\nRunning Laub-Loomis benchmark\n###")

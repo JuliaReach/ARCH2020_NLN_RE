@@ -3,66 +3,78 @@
 # See https://easychair.org/publications/paper/gjfh
 # =================================================================
 
-using Reachability, MathematicalSystems, LazySets, TaylorIntegration
-using Reachability: solve
+using ReachabilityAnalysis, Plots
 
-# Equations of motion: we write the function such that the operations are either
-# unary or binary
-@taylorize function vanderPol_mu_one!(t, x, dx)
+const e1y = [0.0, 1.0, 0.0, 0.0]
+const e2y = [0.0, 0.0, 0.0, 1.0]
+
+@taylorize function vdp_N2_mu1!(dx, x, params, t)
     local μ = 1.0
-    dx[1] = x[2]
-    dx[2] = (μ * x[2]) * (1 - x[1]^2) - x[1]
+    x₁, y₁, x₂, y₂ = x
+
+    aux0 = x₂ - x₁
+    #
+    aux11 = 1 - x₁^2
+    aux12 = μ * y₁
+    aux13 = aux11 * aux12
+    aux15 = aux13 + aux0
+    #
+    aux21 = 1 - x₂^2
+    aux22 = μ * y₂
+    aux23 = aux21 * aux22
+    aux25 = aux23 - aux0
+
+    dx[1] = y₁
+    dx[2] = aux15 - x₁ # (1 - x₁^2)*(μ * y₁) + x₂ - x₁ - x₁
+    dx[3] = y₂
+    dx[4] = aux25 - x₂ # (1 - x₂^2) * (μ * y₂) - x₂ + x₁ - x₂
+
     return dx
 end
 
-@taylorize function vanderPol_mu_two!(t, x, dx)
+@taylorize function vdp_N2_mu2!(dx, x, params, t)
     local μ = 2.0
-    dx[1] = x[2]
-    dx[2] = (μ * x[2]) * (1 - x[1]^2) - x[1]
+    x₁, y₁, x₂, y₂ = x
+
+    aux0 = x₂ - x₁
+    #
+    aux11 = 1 - x₁^2
+    aux12 = μ * y₁
+    aux13 = aux11 * aux12
+    aux15 = aux13 + aux0
+    #
+    aux21 = 1 - x₂^2
+    aux22 = μ * y₂
+    aux23 = aux21 * aux22
+    aux25 = aux23 - aux0
+
+    dx[1] = y₁
+    dx[2] = aux15 - x₁ # (1 - x₁^2)*(μ * y₁) + x₂ - x₁ - x₁
+    dx[3] = y₂
+    dx[4] = aux25 - x₂ # (1 - x₂^2) * (μ * y₂) - x₂ + x₁ - x₂
+
     return dx
 end
 
-function vanderpol(; μ=1.0,
-                     X0=Hyperrectangle(low=[1.25, 2.35], high=[1.55, 2.45]),
-                     T=7.0,
-                     property=(t, x) -> x[2] < 2.75)
+
+function vanderpolN2(; μ=1.0)
 
     if μ == 1.0
-        f = vanderPol_mu_one!
+        # Initial conditions
+        X0 = convert(Hyperrectangle, (1.25..1.55) × (2.35..2.45) × (1.55..1.85) × (2.35..2.45))
+        X0 = Hyperrectangle(Vector(X0.center), Vector(X0.radius))
+        # initial-value problem
+        prob = @ivp(x' = vdp_N2_mu1!(x), dim: 4, x(0) ∈ X0)
     elseif μ == 2.0
-        f = vanderPol_mu_two!
+        # Initial conditions
+        X0 = convert(Hyperrectangle, (1.55..1.85) × (2.35..2.45) × (1.55..1.85) × (2.35..2.45))
+        X0 = Hyperrectangle(Vector(X0.center), Vector(X0.radius))
+        X0 = split(X0, [7, 1, 7, 1])
+        # initial-value problem
+        prob = @ivp(x' = vdp_N2_mu2!(x), dim: 4, x(0) ∈ X0)
     else
         error("the value of μ = $μ is not implemented")
     end
-    # equations, x' = f(x(t))
-    F = BlackBoxContinuousSystem(f, 2)
 
-    # problem options
-    𝑂 = Options(:T=>T, :mode=>"check", :property=>property)
-    
-    # instantiate problem
-    𝑃 = InitialValueProblem(F, X0)
-
-    return 𝑃, 𝑂
-end
-
-function split(H::AbstractHyperrectangle, n::Int=2, m::Int=2)
-     @assert dim(H) == 2
-     r = copy(radius_hyperrectangle(H))
-     r[1] /= n
-     r[2] /= m
-     d = 2*r
-     result = Vector{Hyperrectangle}()
-     sizehint!(result, n*m)
-     c0 = low(H) - r
-     c = copy(c0)
-     for i in 1:n
-         c[1] += d[1]
-         c[2] = c0[2]
-         for j in 1:m
-             c[2] += d[2]
-             push!(result, Hyperrectangle(copy(c), copy(r)))
-         end
-     end
-     return result
+    return prob
 end

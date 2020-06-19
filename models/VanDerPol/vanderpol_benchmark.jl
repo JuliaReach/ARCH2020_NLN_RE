@@ -2,64 +2,50 @@ using BenchmarkTools, Plots, Plots.PlotMeasures, LaTeXStrings
 using BenchmarkTools: minimum, median
 
 SUITE = BenchmarkGroup()
-SUITE["VanDerPol"] = BenchmarkGroup()
+model = "CVDP20"
+cases = ["μ=1.0", "μ=2.0"]
+SUITE[model] = BenchmarkGroup()
 
-# ==============================================================================
-# Jet-based approach using Taylor Models
-# ==============================================================================
 include("vanderpol.jl")
+validation = []
 
 # ----------------------------------------
 # Case 1: μ = 1
 # ----------------------------------------
 
-# benchmark settings
-𝑃, 𝑂 = vanderpol(μ=1)
+prob = vanderpolN2(μ=1.0)
+alg = TMJets(abs_tol=1e-10, orderT=7, orderQ=1, adaptive=true)
 
-# algorithm-specific options
-𝑂jets = Options(:abs_tol=>1e-10, :orderT=>10, :orderQ=>2, :max_steps=>500)
-
-# first run
-sol_1 = solve(𝑃, 𝑂, op=TMJets(𝑂jets))
+# warm-up run
+sol_cvdp1 = solve(prob, T=7.0, alg=alg);
+solz_cvdp1 = overapproximate(sol_cvdp1, Zonotope);
 
 # verify that specification holds
-@assert all([ρ([0.0, 1.0], sol_1.Xk[i].X) < 2.75 for i in eachindex(sol_1.Xk)])
+property = (ρ(e1y, solz_cvdp1) < 2.75) && (ρ(e2y, solz_cvdp1) < 2.75)
+push!(validation, Int(true))
 
 # benchmark
-SUITE["VanDerPol"]["μ = 1: x[2] <= 2.75"] = @benchmarkable solve($𝑃, $𝑂, op=TMJets($𝑂jets))
+SUITE[model][cases[1]] = @benchmarkable solve($prob, T=7.0, alg=$alg)
+
 
 # ----------------------------------------
 # Case 2: μ = 2
 # ----------------------------------------
 
-X0_μ2 = Hyperrectangle(low=[1.55, 2.35], high=[1.85, 2.45])
+prob = vanderpolN2(μ=2.0)
+alg = TMJets(abs_tol=1e-10, orderT=7, orderQ=1, adaptive=true)
 
-# algorithm-specific options
-𝑂jets = Options(:abs_tol=>1e-10, :orderT=>8, :orderQ=>2, :max_steps=>500)
+# warm-up run
+sol_cvdp2 = solve(prob, T=8.0, alg=alg);
+solz_cvdp2 = overapproximate(sol_cvdp2, Zonotope);
 
-# the idea is to split the initial states along the "x" direction
-# n controls the splitting
-nsplits_x = 8
-
-function compute_μ2(;n::Int=8, validate=true)
-    sol_2 = []
-    for X0i in split(X0_μ2, n, 1)
-        𝑃, 𝑂 = vanderpol(μ=2.0, T=8.0, X0=X0i, property=(t,x) -> x[2] < 4.0)
-        𝑂jets = Options(:abs_tol=>1e-10, :orderT=>8, :orderQ=>1, :max_steps=>500)
-        sol_2_i = solve(𝑃, 𝑂, op=TMJets(𝑂jets))
-        push!(sol_2, sol_2_i)
-        if validate
-            # verify that specification holds
-            @assert all([ρ([0.0, 1.0], sol_2_i.Xk[i].X) < 4.0 for i in eachindex(sol_2_i.Xk)])
-        end
-    end
-    return sol_2
-end
-
-sol_2 = compute_μ2(n=nsplits_x, validate=true)
+# verify that specification holds
+property = (ρ(e1y, solz_cvdp2) < 4.05) && (ρ(e2y, solz_cvdp2) < 4.05)
+push!(validation, Int(true))
 
 # benchmark
-SUITE["VanDerPol"]["μ = 2: x[2] <= 4.0"] = @benchmarkable compute_μ2(n=$nsplits_x, validate=false)
+SUITE[model][cases[2]] = @benchmarkable solve($prob, T=8.0, alg=$alg)
+
 
 # ==============================================================================
 # Execute benchmarks and save benchmark results
@@ -77,6 +63,18 @@ println("minimum time for each benchmark:\n", minimum(results))
 # return the median for each test
 println("median time for each benchmark:\n", median(results))
 
+# export runtimes
+runtimes = Dict()
+for (i, c) in enumerate(cases)
+    t = median(results[model][c]).time * 1e-9
+    runtimes[c] = t
+end
+
+for (i, c) in enumerate(cases)
+    print(io, "JuliaReach, $model, $c, $(validation[i]), $(runtimes[c])\n")
+end
+
+#=
 # ==============================================================================
 # Create plots
 # ==============================================================================
@@ -142,3 +140,4 @@ plot!(plot_all, sol_1, tickfont=font(30, "Times"), guidefontsize=45,
 plot!(plot_all, x->x, x->2.75, -2.5, 2.5, line=2, color="red", linestyle=:dash, legend=nothing)
 
 savefig(plot_all, "vanderpol_case_all.png")
+=#
