@@ -103,66 +103,27 @@ for (i, c) in enumerate(cases)
     print(io, "JuliaReach, $model, $c, $(validation[i]), $(runtimes[c]), $(final_volume[i])\n")
 end
 
-#=
+#
 # ==============================================================================
-# Execute benchmarks and save benchmark results
+# Plot
 # ==============================================================================
 
-plot(sol_1,
-     tickfont=font(30, "Times"), guidefontsize=45,
-     xlab=L"t\raisebox{2.0mm}{\textcolor{white}{.}}",
-     ylab=L"x_{4}\raisebox{1.2mm}{\textcolor{white}{.}}",
-     xtick=[0., 2., 4., 6., 8., 10., 12., 14., 16., 18., 20.],
-     ytick=[2, 2.5, 3, 3.5, 4, 4.5],
-     xlims=(0., 20.), ylims=(1.5, 4.5),
-     bottom_margin=6mm, left_margin=8mm, right_margin=4mm, top_margin=3mm,
-     size=(1000, 1000), linecolor="blue")
+fig = Plots.plot()
 
-plot!(x->x, x->4.5, 0., 20., line=2, color="red", linestyle=:dash, legend=nothing)
-savefig("laubloomis_case_1.png")
+dt = 0 .. 100
 
-plot(sol_2,
-     tickfont=font(30, "Times"), guidefontsize=45,
-     xlab=L"t\raisebox{2.0mm}{\textcolor{white}{.}}",
-     ylab=L"x_{4}\raisebox{1.2mm}{\textcolor{white}{.}}",
-     xtick=[0., 2., 4., 6., 8., 10., 12., 14., 16., 18., 20.],
-     ytick=[2, 2.5, 3, 3.5, 4, 4.5, 5.0],
-     xlims=(0., 20.), ylims=(1.5, 5.0),
-     bottom_margin=6mm, left_margin=8mm, right_margin=4mm, top_margin=3mm,
-     size=(1000, 1000), linecolor="blue")
+Plots.plot!(fig, sol_pd3z(dt),  vars=(0, 3), linecolor="red", color=:red, alpha=3.0, legend=:bottomright,
+            lab="I & P")
 
-plot!(x->x, x->5.0, 0., 20., line=2, color="red", linestyle=:dash, legend=nothing)
-savefig("laubloomis_case_2.png")
+Plots.plot!(fig, sol_pd2z(dt), vars=(0, 3), linecolor="blue", color=:blue, alpha=0.8,
+    tickfont=font(30, "Times"), guidefontsize=45,
+    xlab=L"t",
+    ylab=L"z",
+    xtick=[0., 25., 50., 75., 100.], ytick=[0.0, 2.5, 5.0, 7.5, 10.0],
+    xlims=(0., 100.5), ylims=(0.0, 11.0),
+    bottom_margin=6mm, left_margin=2mm, right_margin=6mm, top_margin=3mm,
+    size=(1000, 1000), lab="P", legendfontsize=20)
 
-plot(sol_3,
-     tickfont=font(30, "Times"), guidefontsize=45,
-     xlab=L"t\raisebox{2.0mm}{\textcolor{white}{.}}",
-     ylab=L"x_{4}\raisebox{1.2mm}{\textcolor{white}{.}}",
-     xtick=[0., 2., 4., 6., 8., 10., 12., 14., 16., 18., 20.],
-     ytick=[2, 2.5, 3, 3.5, 4, 4.5, 5.0],
-     xlims=(0., 20.), ylims=(1.5, 5.0),
-     bottom_margin=6mm, left_margin=8mm, right_margin=4mm, top_margin=3mm,
-     size=(1000, 1000), linecolor="blue")
+Plots.plot!(fig, sol_pd1z(dt), vars=(0, 3), linecolor="yellow", color=:yellow, alpha=0.3, lab="I")
 
-plot!(x->x, x->5.0, 0., 20., line=2, color="red", linestyle=:dash, legend=nothing)
-savefig("laubloomis_case_3.png")
-
-plot(sol_case_1, color="red")
-
-plot!(sol_case_2, alpha=0.6, color="green")
-
-plot!(sol_case_3, alpha=0.2,
-     tickfont=font(30, "Times"), guidefontsize=45,
-     xlab=L"t\raisebox{2.0mm}{\textcolor{white}{.}}",
-     ylab=L"x_{4}\raisebox{1.2mm}{\textcolor{white}{.}}",
-     xtick=[0., 2., 4., 6., 8., 10., 12., 14., 16., 18., 20.],
-     ytick=[2, 2.5, 3, 3.5, 4, 4.5, 5.0],
-     xlims=(0., 20.), ylims=(1.5, 5.0),
-     bottom_margin=6mm, left_margin=8mm, right_margin=4mm, top_margin=3mm,
-     size=(1000, 1000), color="blue")
-
-plot!(x->x, x->5.0, 0., 20., line=2, color="red", linestyle=:dash, legend=nothing)
-plot!(x->x, x->4.5, 0., 20., line=2, color="red", linestyle=:dash, legend=nothing)
-savefig("laubloomis_case_all.png")
-
-=#
+savefig("ARCH-COMP20-JuliaReach-ProductionDestruction.png")

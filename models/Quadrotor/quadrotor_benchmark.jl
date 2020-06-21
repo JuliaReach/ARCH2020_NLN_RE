@@ -77,52 +77,51 @@ SUITE[model][cases[3]] = @benchmarkable solve($prob, T=$Tspan, alg=$alg)
 # ==============================================================================
 # Execute benchmarks and save benchmark results
 # ==============================================================================
+#
+# # tune parameters
+# tune!(SUITE)
+#
+# # run the benchmarks
+# results = run(SUITE, verbose=true)
+#
+# # return the sample with the smallest time value in each test
+# println("minimum time for each benchmark:\n", minimum(results))
+#
+# # return the median for each test
+# println("median time for each benchmark:\n", median(results))
+#
+# # export runtimes
+# runtimes = Dict()
+# for (i, c) in enumerate(cases)
+#     t = median(results[model][c]).time * 1e-9
+#     runtimes[c] = t
+# end
+#
+# for (i, c) in enumerate(cases)
+#     print(io, "JuliaReach, $model, $c, $(validation[i]), $(runtimes[c])\n")
+# end
 
-# tune parameters
-tune!(SUITE)
 
-# run the benchmarks
-results = run(SUITE, verbose=true)
-
-# return the sample with the smallest time value in each test
-println("minimum time for each benchmark:\n", minimum(results))
-
-# return the median for each test
-println("median time for each benchmark:\n", median(results))
-
-# export runtimes
-runtimes = Dict()
-for (i, c) in enumerate(cases)
-    t = median(results[model][c]).time * 1e-9
-    runtimes[c] = t
-end
-
-for (i, c) in enumerate(cases)
-    print(io, "JuliaReach, $model, $c, $(validation[i]), $(runtimes[c])\n")
-end
-
-
-#=
 # ==============================================================================
-# Create plots
+# Plot
 # ==============================================================================
 
-𝑃, 𝑂 = quad(project_reachset=true)
-sol = solve(𝑃, 𝑂, op=TMJets(𝑂jets))
+fig = Plots.plot()
 
-plot(sol,
-     tickfont=font(30, "Times"), guidefontsize=45,
-     xlab=L"t\raisebox{-0.5mm}{\textcolor{white}{.}}",
-     ylab=L"x_{3}\raisebox{1mm}{\textcolor{white}{.}}",
-     xtick=[0., 1, 2, 3, 4, 5], ytick=[0.5, 0., 0.5, 1.0, 1.5],
-     xlims=(0., 5.), ylims=(-0.5, 1.5),
-     bottom_margin=6mm, left_margin=6mm, right_margin=4mm, top_margin=3mm,
-     size=(1000, 1000), linecolor="blue")
+Plots.plot!(solz3,  vars=(0, 3), linecolor="green", color=:green, alpha=0.8)
+Plots.plot!(solz2, vars=(0, 3), linecolor="blue",   color=:blue, alpha=0.8)
+Plots.plot!(solz1, vars=(0, 3), linecolor="yellow",  color=:yellow, alpha=0.8,
+    tickfont=font(30, "Times"), guidefontsize=45,
+    xlab=L"t", # \raisebox{-0.5mm}{\textcolor{white}{.}}",
+    ylab=L"x_3", # \raisebox{2mm}{\textcolor{white}{.}}",
+    xtick=[0., 1., 2., 3., 4., 5.], ytick=[-1., -0.5, 0., 0.5, 1., 1.5],
+    xlims=(0., 5.), ylims=(-1., 1.5),
+    bottom_margin=6mm, left_margin=2mm, right_margin=4mm, top_margin=3mm,
+    size=(1000, 1000))
 
-plot!(x->x, x->1.4, 0., 5., line=2, color="red", linestyle=:dash, legend=nothing)
-plot!(x->x, x->0.98, 0., 5., line=2, color="red", linestyle=:dash, legend=nothing)
-plot!(x->x, x->1.02, 0., 5., line=2, color="red", linestyle=:dash, legend=nothing)
-plot!(x->x, x->0.9, 0., 5., line=2, color="red", linestyle=:dash, legend=nothing)
+Plots.plot!(x->x, x->0.98, 0., 5., line=2, color="red", linestyle=:dash, legend=nothing)
+Plots.plot!(x->x, x->1.02, 0., 5., line=2, color="red", linestyle=:dash, legend=nothing)
+Plots.plot!(x->x, x->0.9,  0., 5., line=2, color="red", linestyle=:dash, legend=nothing)
+Plots.plot!(x->x, x->1.4,  0., 5., line=2, color="red", linestyle=:dash, legend=nothing)
 
-savefig("quadrotor.png")
-=#
+savefig("ARCH-COMP20-JuliaReach-Quadrotor.png")

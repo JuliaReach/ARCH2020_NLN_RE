@@ -74,7 +74,7 @@ push!(validation, Int(property))
 # width of final box
 width = ρ(e4, sol_3z[end]) + ρ(-e4, sol_3z[end])
 push!(final_width, trunc(width, digits=3))
-println("width of final box, case W = $(cases[3]) : $width")
+println("width of final box, case $(cases[3]) : $width")
 
 # benchmark
 SUITE[model][cases[3]] = @benchmarkable solve($prob, T=$T, alg=$alg)
@@ -106,66 +106,25 @@ for (i, c) in enumerate(cases)
     print(io, "JuliaReach, $model, $c, $(validation[i]), $(runtimes[c]), $(final_width[i])\n")
 end
 
-#=
+
 # ==============================================================================
-# Execute benchmarks and save benchmark results
+# Plot
 # ==============================================================================
 
-plot(sol_1,
-     tickfont=font(30, "Times"), guidefontsize=45,
-     xlab=L"t\raisebox{2.0mm}{\textcolor{white}{.}}",
-     ylab=L"x_{4}\raisebox{1.2mm}{\textcolor{white}{.}}",
-     xtick=[0., 2., 4., 6., 8., 10., 12., 14., 16., 18., 20.],
-     ytick=[2, 2.5, 3, 3.5, 4, 4.5],
-     xlims=(0., 20.), ylims=(1.5, 4.5),
-     bottom_margin=6mm, left_margin=8mm, right_margin=4mm, top_margin=3mm,
-     size=(1000, 1000), linecolor="blue")
+fig = Plots.plot()
 
-plot!(x->x, x->4.5, 0., 20., line=2, color="red", linestyle=:dash, legend=nothing)
-savefig("laubloomis_case_1.png")
+Plots.plot!(fig, sol_3z, vars=(0, 4), linecolor="green", color=:green, alpha=0.8)
+Plots.plot!(fig, sol_2z, vars=(0, 4), linecolor="blue",  color=:blue, alpha=0.8)
+Plots.plot!(fig, sol_1z, vars=(0, 4), linecolor="yellow", color=:yellow, alpha=0.8,
+    tickfont=font(30, "Times"), guidefontsize=45,
+    xlab=L"t", #\raisebox{-0.5mm}{\textcolor{white}{.}}",
+    ylab=L"x_4", # \raisebox{2mm}{\textcolor{white}{.}}",
+    xtick=[0., 5., 10., 15., 20.], ytick=[1.5, 2., 2.5, 3., 3.5, 4., 4.5, 5.],
+    xlims=(0., 20.), ylims=(1.5, 5.02),
+    bottom_margin=6mm, left_margin=2mm, right_margin=4mm, top_margin=3mm,
+    size=(1000, 1000))
 
-plot(sol_2,
-     tickfont=font(30, "Times"), guidefontsize=45,
-     xlab=L"t\raisebox{2.0mm}{\textcolor{white}{.}}",
-     ylab=L"x_{4}\raisebox{1.2mm}{\textcolor{white}{.}}",
-     xtick=[0., 2., 4., 6., 8., 10., 12., 14., 16., 18., 20.],
-     ytick=[2, 2.5, 3, 3.5, 4, 4.5, 5.0],
-     xlims=(0., 20.), ylims=(1.5, 5.0),
-     bottom_margin=6mm, left_margin=8mm, right_margin=4mm, top_margin=3mm,
-     size=(1000, 1000), linecolor="blue")
+Plots.plot!(fig, x->x, x->4.5, 0., 20., line=2, color="red", linestyle=:dash, legend=nothing)
+Plots.plot!(fig, x->x, x->5., 0., 20., line=2, color="red", linestyle=:dash, legend=nothing)
 
-plot!(x->x, x->5.0, 0., 20., line=2, color="red", linestyle=:dash, legend=nothing)
-savefig("laubloomis_case_2.png")
-
-plot(sol_3,
-     tickfont=font(30, "Times"), guidefontsize=45,
-     xlab=L"t\raisebox{2.0mm}{\textcolor{white}{.}}",
-     ylab=L"x_{4}\raisebox{1.2mm}{\textcolor{white}{.}}",
-     xtick=[0., 2., 4., 6., 8., 10., 12., 14., 16., 18., 20.],
-     ytick=[2, 2.5, 3, 3.5, 4, 4.5, 5.0],
-     xlims=(0., 20.), ylims=(1.5, 5.0),
-     bottom_margin=6mm, left_margin=8mm, right_margin=4mm, top_margin=3mm,
-     size=(1000, 1000), linecolor="blue")
-
-plot!(x->x, x->5.0, 0., 20., line=2, color="red", linestyle=:dash, legend=nothing)
-savefig("laubloomis_case_3.png")
-
-plot(sol_case_1, color="red")
-
-plot!(sol_case_2, alpha=0.6, color="green")
-
-plot!(sol_case_3, alpha=0.2,
-     tickfont=font(30, "Times"), guidefontsize=45,
-     xlab=L"t\raisebox{2.0mm}{\textcolor{white}{.}}",
-     ylab=L"x_{4}\raisebox{1.2mm}{\textcolor{white}{.}}",
-     xtick=[0., 2., 4., 6., 8., 10., 12., 14., 16., 18., 20.],
-     ytick=[2, 2.5, 3, 3.5, 4, 4.5, 5.0],
-     xlims=(0., 20.), ylims=(1.5, 5.0),
-     bottom_margin=6mm, left_margin=8mm, right_margin=4mm, top_margin=3mm,
-     size=(1000, 1000), color="blue")
-
-plot!(x->x, x->5.0, 0., 20., line=2, color="red", linestyle=:dash, legend=nothing)
-plot!(x->x, x->4.5, 0., 20., line=2, color="red", linestyle=:dash, legend=nothing)
-savefig("laubloomis_case_all.png")
-
-=#
+savefig("ARCH-COMP20-JuliaReach-LaubLoomis.png")

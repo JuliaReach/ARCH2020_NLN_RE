@@ -76,11 +76,28 @@ for (i, c) in enumerate(cases)
 end
 
 
-#=
 # ==============================================================================
-# Create plots
+# Plot
 # ==============================================================================
 
-...
+fig = Plots.plot()
 
-=#
+fig = plot()
+plot!(fig, solz_lv[1],  vars=(1, 2), lw=0.0, alpha=1.0, ratio=1.0, color=:blue)
+plot!(fig, solz_lv[2],  vars=(1, 2), lw=0.0, alpha=1.0, ratio=1.0, color=:blue)
+plot!(fig, solz_lv[3],  vars=(1, 2), lw=0.0, alpha=1.0, ratio=1.0, color=:blue)
+plot!(fig, solz_lv[6],  vars=(1, 2), lw=0.0, alpha=1.0, ratio=1.0, color=:blue)
+
+plot!(fig, solz_lv[4],  vars=(1, 2), lw=0.0, alpha=1.0, ratio=1.0, color=:lightgreen)
+plot!(fig, solz_lv[5],  vars=(1, 2), lw=0.0, alpha=1.0, ratio=1.0, color=:lightgreen)
+plot!(fig, solz_lv[7],  vars=(1, 2), lw=0.0, alpha=1.0, ratio=1.0, color=:lightgreen)
+
+plot!(fig, B, 1e-4, color=:white, lw=2.0, linecolor=:red, tickfont=font(30, "Times"), guidefontsize=45,
+    xlab=L"x",
+    ylab=L"y",
+    xtick=[0.8, 1.0, 1.2, 1.4], ytick=[0.6, 0.8, 1.0, 1.2, 1.4],
+    xlims=(0.6, 1.4), ylims=(0.6, 1.4),
+    bottom_margin=6mm, left_margin=2mm, right_margin=8mm, top_margin=3mm,
+    size=(1000, 1000))
+
+savefig("ARCH-COMP20-JuliaReach-Lotka-Volterra.png")

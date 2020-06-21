@@ -7,6 +7,8 @@ using ReachabilityAnalysis, Plots
 
 const RA = ReachabilityAnalysis
 const T_lv = 3.64
+const B = Ball2([1.0, 1.0], 0.15) # "exact"
+
 
 @taylorize function lotka_volterra!(du, u, p, t)
     u1u2 = u[1] * u[2]
@@ -22,7 +24,6 @@ function lotka_volterra_hybrid(; nsplit=1,
                                  n_int=50)   # number of directions for the inner approximation
 
     # generate external / internal polytopic approximations of the guard
-    B = Ball2([1.0, 1.0], 0.15) # "exact"
     B_ext = overapproximate(B, ε_ext) # outer approximation
     B_int = underapproximate(B, PolarDirections(n_int)) # inner approximation
     B_int = tohrep(convert(VPolygon, B_int)) # cast to Hrep

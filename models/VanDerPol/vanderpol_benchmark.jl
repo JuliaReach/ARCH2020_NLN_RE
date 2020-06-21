@@ -74,70 +74,23 @@ for (i, c) in enumerate(cases)
     print(io, "JuliaReach, $model, $c, $(validation[i]), $(runtimes[c])\n")
 end
 
-#=
+
 # ==============================================================================
-# Create plots
+# Plot
 # ==============================================================================
 
-# --------------------------
-# Case 1
-# --------------------------
+fig = Plots.plot()
 
-plot(sol_1,
-     tickfont=font(30, "Times"), guidefontsize=45,
-     xlab=L"x\raisebox{-0.5mm}{\textcolor{white}{.}}",
-     ylab=L"y\raisebox{2mm}{\textcolor{white}{.}}",
-     xtick=[-3., -2., -1., 0., 1., 2., 3.], ytick=[-3., -2., -1., 0., 1., 2., 3.],
-     xlims=(-3., 3.), ylims=(-3., 3.),
-     bottom_margin=6mm, left_margin=2mm, right_margin=4mm, top_margin=3mm,
-     size=(1000, 1000), linecolor="red", color="red")
+fig = plot()
+plot!(fig, solz_cvdp1,  vars=(1, 2), lw=0.0, alpha=1.0, color=:red)
 
-plot!(x->x, x->2.75, -3., 3., line=2, color="red", linestyle=:dash, legend=nothing)
-savefig("vanderpol_case_1.png")
+plot!(fig, solz_cvdp2,  vars=(1, 2), lw=0.0, alpha=1.0, color=:blue,
+    tickfont=font(30, "Times"), guidefontsize=45,
+    xlab=L"x_{1}",
+    ylab=L"y_1",
+    xtick=[-2.0, 0.0, 2.0], ytick=[-4.0, -2.0, 0.0, 2.0, 4.0],
+    xlims=(-2.5, 2.5), ylims=(-4.05, 4.05),
+    bottom_margin=8mm, left_margin=2mm, right_margin=8mm, top_margin=3mm,
+    size=(1000, 1000))
 
-# --------------------------
-# Case 2
-# --------------------------
-
-plot_2 = plot(x->x, x->4.0, -2.5, 3., line=2, color="red", linestyle=:dash, legend=nothing)
-
-for i in 1:nsplits_x
-    plot!(plot_2, sol_2[i], tickfont=font(30, "Times"), guidefontsize=45,
-                   xlab=L"x\raisebox{-0.5mm}{\textcolor{white}{.}}",
-                   ylab=L"y\raisebox{2mm}{\textcolor{white}{.}}",
-                   xtick=[-2., -1., 0., 1., 2., 3.], ytick=[-4., -3., -2., -1., 0., 1., 2., 3., 4.],
-                   xlims=(-2.5, 3.), ylims=(-4.5, 4.),
-                   bottom_margin=6mm, left_margin=2mm, right_margin=4mm, top_margin=3mm,
-                   size=(1000, 1000), color="blue", linewidth=0.0, linecolor="blue", alpha=.5)
-end
-
-savefig(plot_2, "vanderpol_case_2.png")
-
-# --------------------------
-# Cases 1 and 2 overlapped
-# --------------------------
-
-plot_all = plot(x->x, x->4.0, -2.5, 2.5, line=2, color="red", linestyle=:dash, legend=nothing)
-
-for i in 1:nsplits_x
-    plot!(plot_all, sol_2[i], tickfont=font(30, "Times"), guidefontsize=45,
-                   xlab=L"x\raisebox{-0.5mm}{\textcolor{white}{.}}",
-                   ylab=L"y\raisebox{1mm}{\textcolor{white}{.}}",
-                   xtick=[-2., -1., 0., 1., 2.], ytick=[-4., -3., -2., -1., 0., 1., 2., 3., 4.],
-                   xlims=(-2.5, 2.5), ylims=(-4.5, 4.),
-                   bottom_margin=6mm, left_margin=2mm, right_margin=4mm, top_margin=3mm,
-                   size=(1000, 1000), color="blue", linewidth=0., linecolor="blue")
-end
-
-plot!(plot_all, sol_1, tickfont=font(30, "Times"), guidefontsize=45,
-                       xlab=L"x\raisebox{-0.5mm}{\textcolor{white}{.}}",
-                       ylab=L"y\raisebox{1mm}{\textcolor{white}{.}}",
-                       xtick=[-2., -1., 0., 1., 2.], ytick=[-4., -3., -2., -1., 0., 1., 2., 3., 4.],
-                       xlims=(-2.5, 2.5), ylims=(-4.5, 4.),
-                       bottom_margin=6mm, left_margin=2mm, right_margin=4mm, top_margin=3mm,
-                       size=(1000, 1000), color="red", linewidth=0., linecolor="red")
-
-plot!(plot_all, x->x, x->2.75, -2.5, 2.5, line=2, color="red", linestyle=:dash, legend=nothing)
-
-savefig(plot_all, "vanderpol_case_all.png")
-=#
+savefig(fig, "ARCH-COMP20-JuliaReach-VanDerPol.png")
