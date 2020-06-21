@@ -1,0 +1,12 @@
+language: julia
+
+services:
+  - docker
+
+before_install:
+  - docker build . -t juliareach
+  - docker ps -a
+  - docker run -i juliareach
+
+script:
+  - julia --project=. startup.jl
