@@ -14,22 +14,22 @@ intersect_time = []
 # ----------------------------------------
 #  Case 1:
 # ----------------------------------------
-prob = lotka_volterra()
-alg = TMJets(abs_tol=1e-14, orderT=7, orderQ=1, adaptive=true,
-            disjointness=RA.ZonotopeEnclosure())
+ε_ext = 1e-4
+prob = lotka_volterra(; nsplit=4, ε_ext=ε_ext)
+alg = TMJets(abs_tol=1e-14, orderT=7, orderQ=1)
 
 # warm-up run
 sol_lv = solve(prob, T=T_lv,
                   alg=alg,
-                  max_jumps=2,
+                  max_jumps=100,
                   intersect_source_invariant=false,
                   intersection_method=RA.BoxIntersection(),
-                  clustering_method=RA.BoxClustering(),
+                  clustering_method=RA.BoxClustering(3),
                   disjointness_method=RA.BoxEnclosure());
 solz_lv = overapproximate(sol_lv, Zonotope);
 
 # obtain area
-area, time_in_guard = lv_property(solz_lv)
+area, time_in_guard = lv_property(solz_lv, ε_ext)
 push!(validation, Int(true))
 push!(final_area, trunc(area, sigdigits=3))
 push!(intersect_time, trunc(time_in_guard, sigdigits=3))
@@ -40,10 +40,10 @@ println("Time spent in guard, case $(cases[1]) : $(time_in_guard)")
 SUITE[model][cases[1]] = @benchmarkable solve($prob,
                   T = $T_lv,
                   alg = $alg,
-                  max_jumps = 2,
+                  max_jumps = 100,
                   intersect_source_invariant = false,
                   intersection_method = RA.BoxIntersection(),
-                  clustering_method = RA.BoxClustering(),
+                  clustering_method = RA.BoxClustering(3),
                   disjointness_method = RA.BoxEnclosure())
 
 
@@ -75,29 +75,32 @@ for (i, c) in enumerate(cases)
         " $(final_area[i]), $(intersect_time[i])\n")
 end
 
-
 # ==============================================================================
-# Plot
+# Create plots
 # ==============================================================================
-
-fig = Plots.plot()
 
 fig = plot()
-plot!(fig, solz_lv[1],  vars=(1, 2), lw=0.0, alpha=1.0, ratio=1.0, color=:blue)
-plot!(fig, solz_lv[2],  vars=(1, 2), lw=0.0, alpha=1.0, ratio=1.0, color=:blue)
-plot!(fig, solz_lv[3],  vars=(1, 2), lw=0.0, alpha=1.0, ratio=1.0, color=:blue)
-plot!(fig, solz_lv[6],  vars=(1, 2), lw=0.0, alpha=1.0, ratio=1.0, color=:blue)
 
-plot!(fig, solz_lv[4],  vars=(1, 2), lw=0.0, alpha=1.0, ratio=1.0, color=:lightgreen)
-plot!(fig, solz_lv[5],  vars=(1, 2), lw=0.0, alpha=1.0, ratio=1.0, color=:lightgreen)
-plot!(fig, solz_lv[7],  vars=(1, 2), lw=0.0, alpha=1.0, ratio=1.0, color=:lightgreen)
+outside_idx = findall(x -> x == 1, location.(sol_lv))
+inside_idx = findall(x -> x == 2 || x == 3, location.(sol_lv))
 
-plot!(fig, B, 1e-4, color=:white, lw=2.0, linecolor=:red, tickfont=font(30, "Times"), guidefontsize=45,
-    xlab=L"x",
-    ylab=L"y",
-    xtick=[0.8, 1.0, 1.2, 1.4], ytick=[0.6, 0.8, 1.0, 1.2, 1.4],
-    xlims=(0.6, 1.4), ylims=(0.6, 1.4),
-    bottom_margin=6mm, left_margin=2mm, right_margin=8mm, top_margin=3mm,
-    size=(1000, 1000))
+for i in outside_idx
+    plot!(fig, solz_lv[i], vars=(1, 2), lw=0.0, alpha=1.0, color=:blue)
+end
 
-savefig("ARCH-COMP20-JuliaReach-Lotka-Volterra.png")
+for i in inside_idx
+    plot!(fig, solz_lv[i], vars=(1, 2), lw=0.0, alpha=1.0, color=:lightgreen)
+end
+
+B = Ball2([1.0, 1.0], 0.15) # "exact"
+B_ext = overapproximate(B, ε_ext) # outer approximation
+plot!(fig, B, 1e-4, color=:white, lw=2.0, linecolor=:red, tickfont=font(30, "Times"),
+        guidefontsize=45,
+        xlab=L"x",
+        ylab=L"y",
+        xtick=[0.8, 1.0, 1.2], ytick=[0.6, 0.8, 1.0, 1.2],
+        xlims=(0.6, 1.4), ylims=(0.6, 1.4),
+        bottom_margin=6mm, left_margin=2mm, right_margin=8mm, top_margin=3mm,
+        size=(1000, 1000))
+
+savefig("ARCH-COMP20-JuliaReach-LotkaVolterra.png")

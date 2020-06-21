@@ -7,8 +7,6 @@ using ReachabilityAnalysis, Plots
 
 const RA = ReachabilityAnalysis
 const T_lv = 3.64
-const B = Ball2([1.0, 1.0], 0.15) # "exact"
-
 
 @taylorize function lotka_volterra!(du, u, p, t)
     u1u2 = u[1] * u[2]
@@ -17,13 +15,13 @@ const B = Ball2([1.0, 1.0], 0.15) # "exact"
     return du
 end
 
-
-function lotka_volterra_hybrid(; nsplit=1,
-                                 ε = 0.008,
-                                 ε_ext=1e-4, # threshold for the outer approximation
-                                 n_int=50)   # number of directions for the inner approximation
+function lotka_volterra(; nsplit=4,
+                          ε = 0.008,
+                          ε_ext=1e-4, # threshold for the outer approximation
+                          n_int=50)   # number of directions for the inner approximation
 
     # generate external / internal polytopic approximations of the guard
+    B = Ball2([1.0, 1.0], 0.15) # "exact"
     B_ext = overapproximate(B, ε_ext) # outer approximation
     B_int = underapproximate(B, PolarDirections(n_int)) # inner approximation
     B_int = tohrep(convert(VPolygon, B_int)) # cast to Hrep
@@ -53,16 +51,7 @@ function lotka_volterra_hybrid(; nsplit=1,
     return InitialValueProblem(H, X0st)
 end
 
-
-function lotka_volterra()
-    # hybrid problem
-    prob = lotka_volterra_hybrid(nsplit=5, ε_ext=1e-6, n_int = 50, ε = 0.008);
-
-    return prob
-end
-
-
-@inline function lv_property(solz; ε_ext=1e-4)
+@inline function lv_property(solz, ε_ext)
 
     # Sets intersecting the nonlinear guard
     B = Ball2([1.0, 1.0], 0.15) # "exact"
@@ -75,16 +64,16 @@ end
     end
 
     # Compute time spent inside non-linear guard
-    times = [tspan(solz[ind[1]][ind[2]]) for ind in intersecting_reachsets];
+    times = [tspan(solz[ind[1]][ind[2]]) for ind in intersecting_reachsets]
     tmin = minimum(tstart, times)
     tmax = maximum(tend, times)
     @show(tmin, tmax, tmax-tmin)
 
     indxs = Int[]
-    for (i, e) in enumerate(tspan.(solz_lv))
+    for (i, e) in enumerate(tspan.(solz))
         T_lv ∈ tspan(e) && push!(indxs, i)
     end
-    chlast = ConvexHullArray([set(solz[i](T_lv)) for i in indxs]);
+    chlast = ConvexHullArray([set(solz[i](T_lv)) for i in indxs])
     chlasth = overapproximate(chlast, Hyperrectangle)
     a = low(chlasth)
     b = high(chlasth)
