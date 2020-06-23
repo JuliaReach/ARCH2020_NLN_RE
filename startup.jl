@@ -26,10 +26,14 @@ function main()
     # Quadrotor benchmark
     println("###\nRunning Quadrotor benchmark\n###")
     include("models/Quadrotor/quadrotor_benchmark.jl")
-    
+
     # Lotka-Volterra tangential crossing benchmark
     println("###\nRunning Lotka-Volterra tangential crossing benchmark\n###")
     include("models/LotkaVolterra/lotka_volterra_benchmark.jl")
+
+    # Spacecraft benchmark
+    println("###\nSpacecraft benchmark\n###")
+    include("models/Spacecraft/spacecraft_benchmark.jl")
 
     print(io, "\n")
     println("Finished running benchmarks.")
