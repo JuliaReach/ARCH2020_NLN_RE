@@ -1,10 +1,13 @@
 using BenchmarkTools, Plots, Plots.PlotMeasures, LaTeXStrings
 using BenchmarkTools: minimum, median
 
-using ReachabilityAnalysis: BoxEnclosure, BoxClustering, TemplateHullIntersection, LazyClustering
+SUITE = BenchmarkGroup()
+model = "SPRE20"
+cases = [""]
+SUITE[model] = BenchmarkGroup()
 
 include("spacecraft.jl")
-
+validation = []
 boxdirs = BoxDirections(5)
 
 function solve_spacecraft(prob; k=25, s=missing)
@@ -38,22 +41,67 @@ prob = spacecraft()
 sol = solve_spacecraft(prob; k=25, s=missing)
 solz = overapproximate(sol, Zonotope)
 
-@show line_of_sight(solz)
-@show velocity_constraint(solz)
-@show target_avoidance(solz)
+# verify that specifications hold
+prop1 = line_of_sight(solz)
+println("Line of sight property: $prop1")
+
+prop2 = velocity_constraint(solz)
+println("Velocity constraint property $prop2")
+
+prop3 = target_avoidance(solz)
+println("Target avoidance property: $prop3")
+
+property = prop1 && prop2 && prop3
+push!(validation, Int(property))
+
+# benchmark
+SUITE[model][cases[1]] = @benchmarkable solve_spacecraft($prob; k=25, s=missing)
+
+# ==============================================================================
+# Execute benchmarks and save benchmark results
+# ==============================================================================
+
+# tune parameters
+tune!(SUITE)
+
+# run the benchmarks
+results = run(SUITE, verbose=true)
+
+# return the sample with the smallest time value in each test
+println("minimum time for each benchmark:\n", minimum(results))
+
+# return the median for each test
+println("median time for each benchmark:\n", median(results))
+
+# export runtimes
+runtimes = Dict()
+for (i, c) in enumerate(cases)
+    t = median(results[model][c]).time * 1e-9
+    runtimes[c] = t
+end
+
+for (i, c) in enumerate(cases)
+    print(io, "JuliaReach, $model, $c, $(validation[i]), $(runtimes[c])\n")
+end
+
+# ==============================================================================
+# Plot
+# ==============================================================================
 
 idx_approaching = findall(x -> x == 1, location.(solz))
 idx_attempt = findall(x -> x == 2, location.(solz))
 idx_aborting = findall(x -> x == 3, location.(solz))
 
-fig = plot(legend=:bottomright)
+fig = Plots.plot(legend=:bottomright)
 
 for idx in idx_approaching
-    plot!(fig, solz[idx], vars=(1, 2), lw=0.0, color=:blue, alpha=1.)
+    Plots.plot!(fig, solz[idx], vars=(1, 2), lw=0.0, color=:blue, alpha=1.)
 end
 for idx in idx_attempt
-    plot!(fig, solz[idx], vars=(1, 2), lw=0.0, color=:red, alpha=1.)
+    Plots.plot!(fig, solz[idx], vars=(1, 2), lw=0.0, color=:red, alpha=1.)
 end
 for idx in idx_aborting
-    plot!(fig, solz[idx], vars=(1, 2), lw=0.0, color=:green, alpha=1.)
+    Plots.plot!(fig, solz[idx], vars=(1, 2), lw=0.0, color=:green, alpha=1.)
 end
+
+savefig(fig, "ARCH-COMP20-JuliaReach-Spacecraft.png")
