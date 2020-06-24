@@ -1,3 +1,7 @@
+using ReachabilityAnalysis, SparseArrays
+
+using ReachabilityAnalysis: TaylorModelReachSet, AbstractLazyReachSet
+
 const μ = 3.986e14 * 60^2
 const r = 42164.0e3
 const r² = r^2
@@ -192,7 +196,7 @@ function line_of_sight(sol)
     return true
 end
 
-function absolute_velocity(R::RA.AbstractLazyReachSet)
+function absolute_velocity(R::AbstractLazyReachSet)
     vx = 3
     vy = 4
     vx2 = set(overapproximate(project(R, vars=(vx,)), Interval)).dat
@@ -200,7 +204,7 @@ function absolute_velocity(R::RA.AbstractLazyReachSet)
     sqrt(vx2 + vy2)
 end
 
-function absolute_velocity(R::RA.TaylorModelReachSet)
+function absolute_velocity(R::TaylorModelReachSet)
     Z = overapprximate(R, Zonotope)
     absolute_velocity(Z)
 end
