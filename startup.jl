@@ -7,14 +7,15 @@ Pkg.activate(@__DIR__)
 Pkg.instantiate()
 
 function main()
-    global io = open("runtimes.csv", "w")
+    mkdir("result")
+    global io = open("result/results.csv", "w")
 
     println("Running NLN benchmarks...")
 
     # Production-destruction benchmark
     println("###\nRunning production-destruction model benchmark\n###")
     include("models/ProdDestruct/prod_destruct_benchmark.jl")
-    #
+
     # Coupled Van der Pol benchmark
     println("###\nRunning Van der Pol benchmark\n###")
     include("models/VanDerPol/vanderpol_benchmark.jl")
