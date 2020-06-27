@@ -6,9 +6,14 @@ import Pkg
 Pkg.activate(@__DIR__)
 Pkg.instantiate()
 
+const TARGET_FOLDER = "result"
+const RESULTS_FILE = "results.csv"
+
 function main()
-    mkdir("result")
-    global io = open("result/results.csv", "w")
+    if !isdir(TARGET_FOLDER)
+        mkdir(TARGET_FOLDER)
+    end
+    global io = open(joinpath(TARGET_FOLDER, RESULTS_FILE), "w")
 
     println("Running NLN benchmarks...")
 
