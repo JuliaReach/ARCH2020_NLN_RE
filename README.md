@@ -31,12 +31,10 @@ For installation instructions on different platforms, consult
 [the Docker documentation](https://docs.docker.com/install/).
 For general information about `Docker`, see
 [this guide](https://docs.docker.com/get-started/).
-Once you have installed Docker, clone this repository and start the `measure_all`
+Once you have installed Docker, start the `measure_all` script:
 script:
 
 ```shell
-$ git clone https://github.com/JuliaReach/ARCH2020_NLN_RE.git
-$ cd ARCH2020_NLN_RE
 $ measure_all
 ```
 
