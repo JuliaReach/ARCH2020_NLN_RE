@@ -23,9 +23,9 @@ sol_lv = solve(prob, T=T_lv,
                   alg=alg,
                   max_jumps=100,
                   intersect_source_invariant=false,
-                  intersection_method=RA.BoxIntersection(),
-                  clustering_method=RA.BoxClustering(3),
-                  disjointness_method=RA.BoxEnclosure());
+                  intersection_method=BoxIntersection(),
+                  clustering_method=BoxClustering(3),
+                  disjointness_method=BoxEnclosure());
 solz_lv = overapproximate(sol_lv, Zonotope);
 
 # obtain area
@@ -42,9 +42,9 @@ SUITE[model][cases[1]] = @benchmarkable solve($prob,
                   alg = $alg,
                   max_jumps = 100,
                   intersect_source_invariant = false,
-                  intersection_method = RA.BoxIntersection(),
-                  clustering_method = RA.BoxClustering(3),
-                  disjointness_method = RA.BoxEnclosure())
+                  intersection_method = BoxIntersection(),
+                  clustering_method = BoxClustering(3),
+                  disjointness_method = BoxEnclosure())
 
 
 # ==============================================================================
