@@ -5,7 +5,6 @@
 
 using ReachabilityAnalysis, Plots
 
-const RA = ReachabilityAnalysis
 const T_lv = 3.64
 
 @taylorize function lotka_volterra!(du, u, p, t)
@@ -59,7 +58,7 @@ end
     intersecting_reachsets = []
     for (i, Fi) in enumerate(solz)
         for (j, Xj) in enumerate(Fi)
-            !isdisjoint(Xj, B_ext) && push!(intersecting_reachsets, (i, j))
+            !is_intersection_empty(Xj, B_ext) && push!(intersecting_reachsets, (i, j))
         end
     end
 

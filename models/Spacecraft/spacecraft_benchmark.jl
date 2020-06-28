@@ -76,6 +76,7 @@ println("median time for each benchmark:\n", median(results))
 # export runtimes
 runtimes = Dict()
 for (i, c) in enumerate(cases)
+    local t
     t = median(results[model][c]).time * 1e-9
     runtimes[c] = t
 end
