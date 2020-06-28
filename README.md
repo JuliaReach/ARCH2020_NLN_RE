@@ -37,26 +37,12 @@ script:
 ```shell
 $ measure_all
 ```
-
----
-
-### Additional comments about the Docker container
-
-
-```
-$ docker build . -t juliareach
-```
-
-To run the container with the benchmarks, type:
-
-```shell
-$ docker run -i juliareach
-```
-
 The output results will be saved under the folder `result/`,
 and the generated plots will be in your working directory.
 
-The Docker can also be run interactively.
+---
+
+The Docker container can also be run interactively.
 To run it interactively, type:
 
 ```shell
