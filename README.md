@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/JuliaReach/ARCH2020_NLN_RE.svg?branch=master)](https://travis-ci.org/JuliaReach/ARCH2020_NLN_RE)
+
+
 # ARCH2020_NLN_RE
 
 This is the repeatability evaluation (RE) package for the
