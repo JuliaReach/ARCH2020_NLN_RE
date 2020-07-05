@@ -42,7 +42,7 @@ function main()
     include("models/Spacecraft/spacecraft_benchmark.jl")
 
     print(io, "\n")
-    println("Finished running benchmarks.")
+    print("Finished running benchmarks.")
     close(io)
     nothing
 end
