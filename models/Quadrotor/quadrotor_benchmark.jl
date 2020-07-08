@@ -77,30 +77,29 @@ SUITE[model][cases[3]] = @benchmarkable solve($prob, T=$Tspan, alg=$alg)
 # ==============================================================================
 # Execute benchmarks and save benchmark results
 # ==============================================================================
-#
-# # tune parameters
-# tune!(SUITE)
-#
-# # run the benchmarks
-# results = run(SUITE, verbose=true)
-#
-# # return the sample with the smallest time value in each test
-# println("minimum time for each benchmark:\n", minimum(results))
-#
-# # return the median for each test
-# println("median time for each benchmark:\n", median(results))
-#
-# # export runtimes
-# runtimes = Dict()
-# for (i, c) in enumerate(cases)
-#     t = median(results[model][c]).time * 1e-9
-#     runtimes[c] = t
-# end
-#
-# for (i, c) in enumerate(cases)
-#     print(io, "JuliaReach, $model, $c, $(validation[i]), $(runtimes[c])\n")
-# end
 
+# tune parameters
+tune!(SUITE)
+
+# run the benchmarks
+results = run(SUITE, verbose=true)
+
+# return the sample with the smallest time value in each test
+println("minimum time for each benchmark:\n", minimum(results))
+
+# return the median for each test
+println("median time for each benchmark:\n", median(results))
+
+# export runtimes
+runtimes = Dict()
+for (i, c) in enumerate(cases)
+     t = median(results[model][c]).time * 1e-9
+     runtimes[c] = t
+end
+
+for (i, c) in enumerate(cases)
+    print(io, "JuliaReach, $model, $c, $(validation[i]), $(runtimes[c])\n")
+end
 
 # ==============================================================================
 # Plot
