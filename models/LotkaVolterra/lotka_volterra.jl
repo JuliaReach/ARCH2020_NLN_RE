@@ -1,6 +1,6 @@
 # =================================================================
-# Quadrotor model
-# See https://easychair.org/publications/paper/gjfh
+# Lotka-Volterra with nonlinear guard crossing model
+# See https://easychair.org/publications/paper/nrdD
 # =================================================================
 
 using ReachabilityAnalysis, Plots
