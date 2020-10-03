@@ -1,6 +1,6 @@
 # =================================================================
-# Van der Pol model
-# See https://easychair.org/publications/paper/gjfh
+# Coupled Van der Pol model
+# See https://easychair.org/publications/paper/nrdD
 # =================================================================
 
 using ReachabilityAnalysis, Plots
