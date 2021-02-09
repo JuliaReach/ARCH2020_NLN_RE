@@ -1,3 +1,10 @@
+#=
+### Notes
+
+- (Feb 9, 2021) Use `abs_tol=1e-12` in the algorithm option to verify the safety properties.
+
+=#
+
 using BenchmarkTools, Plots, Plots.PlotMeasures, LaTeXStrings
 using BenchmarkTools: minimum, median
 
@@ -22,7 +29,7 @@ solz_cvdp1 = overapproximate(sol_cvdp1, Zonotope);
 
 # verify that specification holds
 property = (ρ(e1y, solz_cvdp1) < 2.75) && (ρ(e2y, solz_cvdp1) < 2.75)
-push!(validation, Int(true))
+push!(validation, Int(property))
 
 # benchmark
 SUITE[model][cases[1]] = @benchmarkable solve($prob, T=7.0, alg=$alg)
@@ -41,7 +48,7 @@ solz_cvdp2 = overapproximate(sol_cvdp2, Zonotope);
 
 # verify that specification holds
 property = (ρ(e1y, solz_cvdp2) < 4.05) && (ρ(e2y, solz_cvdp2) < 4.05)
-push!(validation, Int(true))
+push!(validation, Int(property))
 
 # benchmark
 SUITE[model][cases[2]] = @benchmarkable solve($prob, T=8.0, alg=$alg)
