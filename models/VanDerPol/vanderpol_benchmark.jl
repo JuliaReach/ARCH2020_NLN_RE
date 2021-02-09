@@ -1,3 +1,10 @@
+#=
+### Notes
+
+- (Feb 9, 2021) Use `abs_tol=1e-12` in the algorithm option to verify the safety properties.
+
+=#
+
 using BenchmarkTools, Plots, Plots.PlotMeasures, LaTeXStrings
 using BenchmarkTools: minimum, median
 
