@@ -1,13 +1,41 @@
-[![Build Status](https://travis-ci.org/JuliaReach/ARCH2020_NLN_RE.svg?branch=master)](https://travis-ci.org/JuliaReach/ARCH2020_NLN_RE)
+# ARCH2020 NLN
 
-
-# ARCH2020_NLN_RE
-
-This is the repeatability evaluation (RE) package for the
-ARCH-COMP20 Category Report: Continuous and Hybrid Systems with Nonlinear Dynamics
-of the 4th International
-Competition on Verifying Continuous and Hybrid Systems Friendly Competition
+This is the JuliaReach repeatability evaluation (RE) package for the ARCH-COMP
+2020 category report: Continuous and Hybrid Systems with Nonlinear Dynamics of
+the 4th International Competition on Verifying Continuous and Hybrid Systems
 (ARCH-COMP '20).
+
+To cite the work, you can use:
+
+```
+@inproceedings{GerettiSABCCCFF20,
+  author    = {Luca Geretti and
+               Julien Alexandre Dit Sandretto and
+               Matthias Althoff and
+               Luis Benet and
+               Alexandre Chapoutot and
+               Xin Chen and
+               Pieter Collins and
+               Marcelo Forets and
+               Daniel Freire and
+               Fabian Immler and
+               Niklas Kochdumper and
+               David P. Sanders and
+               Christian Schilling},
+  editor    = {Goran Frehse and
+               Matthias Althoff},
+  title     = {{ARCH-COMP20} Category Report: Continuous and Hybrid Systems with
+               Nonlinear Dynamics},
+  booktitle = {{ARCH}},
+  series    = {EPiC Series in Computing},
+  volume    = {74},
+  pages     = {49--75},
+  publisher = {EasyChair},
+  year      = {2020},
+  url       = {https://doi.org/10.29007/zkf6},
+  doi       = {10.29007/zkf6}
+}
+```
 
 ## Installation
 
